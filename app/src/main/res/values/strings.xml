@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">ComposeExpert</string>
+    <string name="app_name">MarvelCompose</string>
+    <string name="series">Series</string>
+    <string name="events">Events</string>
+    <string name="comics">Comics</string>
+    <string name="stories">Stories</string>
+    <string name="characters">Characters</string>
 </resources>

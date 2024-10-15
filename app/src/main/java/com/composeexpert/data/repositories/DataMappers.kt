@@ -11,20 +11,16 @@ fun ApiCharacter.asCharacter(): Character = Character(
     name,
     description,
     thumbnail.asString(),
-    comics.items.map { Reference(it.name) },
-    events.items.map { Reference(it.name) },
-    stories.items.map { Reference(it.name) },
-    series.items.map { Reference(it.name) },
-    /*listOf(
+    listOf(
         comics.toDomain(ReferenceList.Type.COMIC),
         events.toDomain(ReferenceList.Type.EVENT),
         series.toDomain(ReferenceList.Type.SERIES),
         stories.toDomain(ReferenceList.Type.STORY)
     ),
-    urls.map { Url(it.type, it.url) }*/
+    urls.map { Url(it.type, it.url) },
 )
 
-/*
+fun List<ApiEvent>.asEvents() = map { it.asEvent() }
 
 fun ApiEvent.asEvent(): Event = Event(
     id,
@@ -40,19 +36,21 @@ fun ApiEvent.asEvent(): Event = Event(
     urls.map { Url(it.type, it.url) }
 )
 
+fun List<ApiComic>.asComics() = map { it.asComic() }
+
 fun ApiComic.asComic(): Comic = Comic(
     id,
     title,
     description ?: "",
     thumbnail.asString(),
-    format.toDomain(),
     listOf(
         characters.toDomain(ReferenceList.Type.CHARACTER),
         events.toDomain(ReferenceList.Type.EVENT),
         series.toDomain(ReferenceList.Type.SERIES),
         stories.toDomain(ReferenceList.Type.STORY)
     ),
-    urls.map { Url(it.type, it.url) }
+    urls.map { Url(it.type, it.url) },
+    format.toDomain(),
 )
 
 private fun String.toDomain(): Comic.Format = when (this) {
@@ -81,7 +79,6 @@ private fun ApiReferenceList.toDomain(type: ReferenceList.Type): ReferenceList {
     return ReferenceList(
         type,
         items
-            ?.let { items.map { Reference(it.name) } }
-            ?: emptyList()
+            .let { items.map { Reference(it.name) } }
     )
-}*/
+}

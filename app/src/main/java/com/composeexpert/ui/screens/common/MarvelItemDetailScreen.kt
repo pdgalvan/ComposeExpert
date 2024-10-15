@@ -1,5 +1,6 @@
-package com.composeexpert.ui.screens.characterdetail
+package com.composeexpert.ui.screens.common
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -16,66 +17,60 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.composeexpert.MarvelApp
-import com.composeexpert.data.entities.Character
+import com.composeexpert.data.entities.MarvelItem
 import com.composeexpert.data.entities.Reference
-import com.composeexpert.data.repositories.CharactersRepository
+import com.composeexpert.data.entities.ReferenceList
+import com.example.composeexpert.R
 
 @Composable
-fun CharacterDetailScreen(id: Int) {
-    var character by remember { mutableStateOf<Character?>(null) }
-    LaunchedEffect(Unit) {
-        character = CharactersRepository.finCharacter(id)
-    }
-    character?.let {
-        CharacterDetailScreen(it)
-    }
-}
-
-@Composable
-fun CharacterDetailScreen(character: Character) {
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth()
-
-    ) {
-        item {
-            Header(character)
+fun MarvelItemDetailScreen(
+    marvelItem: MarvelItem,
+    onBack: () -> Unit,
+) {
+    MarvelItemDetailScaffold(
+        marvelItem = marvelItem,
+        onBack = onBack
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(innerPadding)
+        ) {
+            item {
+                Header(marvelItem = marvelItem)
+            }
+            marvelItem.references.forEach {
+                val (icon, @StringRes stringRes) = it.type.createUiData()
+                section(icon, stringRes, it.references)
+            }
         }
-        section(Icons.Default.Collections, "Series", character.series)
-        section(Icons.Default.Event, "Events", character.events)
-        section(Icons.Default.Book, "Comics", character.comics)
-        section(Icons.Default.Bookmark, "Stories", character.stories)
     }
 
 }
 
 fun LazyListScope.section(
     icon: ImageVector,
-    section: String,
+    @StringRes name: Int,
     items: List<Reference>
 ) {
     if (items.isEmpty()) return
     item {
         Text(
-            text = section,
+            text = stringResource(name),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(16.dp)
         )
@@ -89,11 +84,11 @@ fun LazyListScope.section(
 }
 
 @Composable
-fun Header(character: Character) {
+fun Header(marvelItem: MarvelItem) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Image(
-            painter = rememberAsyncImagePainter(character.thumbnail),
-            contentDescription = character.name,
+            painter = rememberAsyncImagePainter(marvelItem.thumbnail),
+            contentDescription = marvelItem.title,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
@@ -102,17 +97,17 @@ fun Header(character: Character) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = character.name,
+            text = marvelItem.title,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp, 0.dp)
         )
-        if (character.description.isNotEmpty()) {
+        if (marvelItem.description.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = character.description,
+                text = marvelItem.description,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .padding(16.dp, 0.dp)
@@ -122,20 +117,10 @@ fun Header(character: Character) {
     }
 }
 
-@Preview(widthDp = 400, heightDp = 700)
-@Composable
-fun CharacterDetailScreenPreview() {
-    val character = Character(
-        id = 1,
-        name = "Character Name",
-        description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer dolor lacus, sollicitudin ac eros ut, commodo ullamcorper est. Ut quis metus id elit tincidunt convallis. Sed sit amet turpis ac ipsum fermentum sollicitudin. Etiam quis est vel dolor molestie suscipit. Fusce ut dui sed neque iaculis ultrices a eget velit.",
-        thumbnail = "",
-        comics = listOf(Reference("Comic 1"), Reference("Comic 2")),
-        events = listOf(Reference("Comic 1"), Reference("Comic 2")),
-        stories = listOf(Reference("Comic 1"), Reference("Comic 2")),
-        series = listOf(Reference("Comic 1"), Reference("Comic 2"))
-    )
-    MarvelApp {
-        CharacterDetailScreen(character)
-    }
+private fun ReferenceList.Type.createUiData(): Pair<ImageVector, Int> = when (this) {
+    ReferenceList.Type.CHARACTER -> Icons.Default.Person to R.string.characters
+    ReferenceList.Type.COMIC -> Icons.Default.Book to R.string.comics
+    ReferenceList.Type.STORY -> Icons.Default.Bookmark to R.string.stories
+    ReferenceList.Type.EVENT -> Icons.Default.Event to R.string.events
+    ReferenceList.Type.SERIES -> Icons.Default.Collections to R.string.series
 }
