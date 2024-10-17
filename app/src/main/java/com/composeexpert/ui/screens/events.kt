@@ -24,13 +24,13 @@ fun EventsScreen(onClick: (Event) -> Unit) {
 }
 
 @Composable
-fun EventDetailScreen(eventId: Int, onBack: () -> Unit) {
+fun EventDetailScreen(eventId: Int) {
     var eventState by remember { mutableStateOf<Event?>(null) }
     LaunchedEffect(Unit) {
         eventState = EventsRepository.find(eventId)
     }
     eventState?.let {
-        MarvelItemDetailScreen(it, onBack)
+        MarvelItemDetailScreen(it)
     }
 }
 

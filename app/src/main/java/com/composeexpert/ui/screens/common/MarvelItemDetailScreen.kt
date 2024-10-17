@@ -37,13 +37,9 @@ import com.composeexpert.data.entities.ReferenceList
 import com.example.composeexpert.R
 
 @Composable
-fun MarvelItemDetailScreen(
-    marvelItem: MarvelItem,
-    onBack: () -> Unit,
-) {
+fun MarvelItemDetailScreen(marvelItem: MarvelItem) {
     MarvelItemDetailScaffold(
         marvelItem = marvelItem,
-        onBack = onBack
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
