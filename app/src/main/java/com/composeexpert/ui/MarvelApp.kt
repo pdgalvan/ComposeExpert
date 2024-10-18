@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
@@ -14,82 +13,63 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.composeexpert.ui.navigation.AppBarIcon
 import com.composeexpert.ui.navigation.AppBottomNavigation
 import com.composeexpert.ui.navigation.DrawerContent
-import com.composeexpert.ui.navigation.NavItem
 import com.composeexpert.ui.navigation.Navigation
-import com.composeexpert.ui.navigation.navigatePoppingUpToStartDestination
 import com.composeexpert.ui.theme.ComposeExpertTheme
 import com.example.composeexpert.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MarvelApp() {
-    val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route ?: ""
-    val showBackNavigation = currentRoute !in NavItem.entries.map { it.navCommand.route }
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val coroutineScope = rememberCoroutineScope()
-    val drawerOptions = listOf(NavItem.HOME, NavItem.SETTINGS)
-    val bottomNavOptions = listOf(NavItem.CHARACTERS, NavItem.COMICS, NavItem.EVENTS)
+fun MarvelApp(appState: MarvelAppState = rememberMarvelAppState()) {
     MarvelScreen {
         ModalNavigationDrawer(
-            drawerState = drawerState,
+            drawerState = appState.drawerState,
             drawerContent = {
                 DrawerContent(
-                    drawerOptions = drawerOptions,
-                    onOptionsClick =  { }
+                    drawerOptions = MarvelAppState.DRAWER_OPTIONS,
+                    selectedIndex = appState.drawerSelectedIndex,
+                    onOptionsClick = { appState.onMenuOptionsClick(it) }
                 )
-            }
-        ) {
+            },
+
+            ) {
             Scaffold(
                 topBar = {
                     TopAppBar(
                         title = { Text(text = stringResource(R.string.app_name)) },
                         navigationIcon = {
-                            if (showBackNavigation) {
+                            if (appState.showBackNavigation) {
                                 AppBarIcon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    onClick = { navController.popBackStack() },
+                                    onClick = appState::onBackClick,
                                 )
                             } else {
                                 AppBarIcon(
                                     imageVector = Icons.Default.Home,
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            drawerState.apply {
-                                                if (isClosed) open() else close()
-                                            }
-                                        }
-                                    },
+                                    onClick = { appState.onMenuClick() },
                                 )
                             }
                         }
                     )
                 },
                 bottomBar = {
-                    AppBottomNavigation(
-                        bottomNavOptions = bottomNavOptions,
-                        currentRoute = currentRoute,
-                        onNavItemClick = { navItem ->
-                            navController.navigatePoppingUpToStartDestination(navItem.navCommand.route)
-                        }
-                    )
+                    if (appState.showBottomNavigation) {
+                        AppBottomNavigation(
+                            bottomNavOptions = MarvelAppState.BOTTOM_NAV_OPTIONS,
+                            currentRoute = appState.currentRoute,
+                            onNavItemClick = { appState.onNavItemClick(it) }
+                        )
+                    }
                 },
             ) { padding ->
                 Box(modifier = Modifier.padding(padding)) {
-                    Navigation(navController)
+                    Navigation(appState.navController)
                 }
             }
         }

@@ -15,6 +15,7 @@ import com.composeexpert.ui.screens.ComicDetailScreen
 import com.composeexpert.ui.screens.ComicsScreen
 import com.composeexpert.ui.screens.EventDetailScreen
 import com.composeexpert.ui.screens.EventsScreen
+import com.composeexpert.ui.screens.SettingsScreen
 
 @ExperimentalMaterial3Api
 @Composable
@@ -26,6 +27,9 @@ fun Navigation(navController: NavHostController) {
         charactersNav(navController)
         comicsNav(navController)
         eventsNav(navController)
+        composable(NavCommand.ContentType(Feature.SETTINGS)) {
+            SettingsScreen()
+        }
     }
 }
 

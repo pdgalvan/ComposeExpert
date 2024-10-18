@@ -12,9 +12,11 @@ import androidx.compose.ui.res.stringResource
 fun DrawerContent(
     drawerOptions: List<NavItem>,
     onOptionsClick: (NavItem) -> Unit,
+    selectedIndex: Int,
 ) {
     ModalDrawerSheet {
-        drawerOptions.forEach { navItem ->
+        drawerOptions.forEachIndexed { index, navItem ->
+            val selected = index == selectedIndex
             NavigationDrawerItem(
                 icon = {
                     Icon(
@@ -28,7 +30,7 @@ fun DrawerContent(
                         style = MaterialTheme.typography.titleMedium
                     )
                 },
-                selected = false,
+                selected = selected,
                 onClick = { onOptionsClick(navItem) }
             )
         }
