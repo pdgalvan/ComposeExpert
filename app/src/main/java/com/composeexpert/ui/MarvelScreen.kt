@@ -5,25 +5,32 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.composeexpert.ui.navigation.AppBarIcon
 import com.composeexpert.ui.navigation.AppBottomNavigation
+import com.composeexpert.ui.navigation.DrawerContent
 import com.composeexpert.ui.navigation.NavItem
 import com.composeexpert.ui.navigation.Navigation
 import com.composeexpert.ui.navigation.navigatePoppingUpToStartDestination
 import com.composeexpert.ui.theme.ComposeExpertTheme
 import com.example.composeexpert.R
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,34 +39,58 @@ fun MarvelApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
     val showBackNavigation = currentRoute !in NavItem.entries.map { it.navCommand.route }
-
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
+    val drawerOptions = listOf(NavItem.HOME, NavItem.SETTINGS)
+    val bottomNavOptions = listOf(NavItem.CHARACTERS, NavItem.COMICS, NavItem.EVENTS)
     MarvelScreen {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = stringResource(R.string.app_name)) },
-                    navigationIcon = {
-                        if (showBackNavigation) {
-                            AppBarIcon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                onClick = { navController.popBackStack() },
-                                contentDescription = "back"
-                            )
-                        }
-                    }
-                )
-            },
-            bottomBar = {
-                AppBottomNavigation(
-                    currentRoute = currentRoute,
-                    onNavItemClick = { navItem ->
-                        navController.navigatePoppingUpToStartDestination(navItem.navCommand.route)
-                    }
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                DrawerContent(
+                    drawerOptions = drawerOptions,
+                    onOptionsClick =  { }
                 )
             }
-        ) { padding ->
-            Box(modifier = Modifier.padding(padding)) {
-                Navigation(navController)
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text(text = stringResource(R.string.app_name)) },
+                        navigationIcon = {
+                            if (showBackNavigation) {
+                                AppBarIcon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    onClick = { navController.popBackStack() },
+                                )
+                            } else {
+                                AppBarIcon(
+                                    imageVector = Icons.Default.Home,
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            drawerState.apply {
+                                                if (isClosed) open() else close()
+                                            }
+                                        }
+                                    },
+                                )
+                            }
+                        }
+                    )
+                },
+                bottomBar = {
+                    AppBottomNavigation(
+                        bottomNavOptions = bottomNavOptions,
+                        currentRoute = currentRoute,
+                        onNavItemClick = { navItem ->
+                            navController.navigatePoppingUpToStartDestination(navItem.navCommand.route)
+                        }
+                    )
+                },
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    Navigation(navController)
+                }
             }
         }
     }

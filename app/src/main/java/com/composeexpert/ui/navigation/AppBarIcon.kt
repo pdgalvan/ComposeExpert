@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 fun AppBarIcon(
     imageVector: ImageVector,
     onClick: () -> Unit,
-    contentDescription: String?,
+    contentDescription: String? = null,
 ) {
     IconButton(onClick = onClick) {
         Icon(imageVector = imageVector, contentDescription = contentDescription)
