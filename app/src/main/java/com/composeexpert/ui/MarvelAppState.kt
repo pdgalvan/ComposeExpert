@@ -1,6 +1,5 @@
 package com.composeexpert.ui
 
-import android.util.Log
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState

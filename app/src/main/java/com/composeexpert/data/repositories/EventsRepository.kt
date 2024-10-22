@@ -7,7 +7,7 @@ object EventsRepository : Repository<Event>() {
     suspend fun get(): List<Event> = super.get {
         ApiClient
             .eventsService
-            .getEvents(0, 100)
+            .getEvents(0, 20)
             .data
             .results
             .asEvents()

@@ -9,12 +9,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.composeexpert.ui.screens.CharacterDetailScreen
-import com.composeexpert.ui.screens.CharactersScreen
-import com.composeexpert.ui.screens.ComicDetailScreen
-import com.composeexpert.ui.screens.ComicsScreen
-import com.composeexpert.ui.screens.EventDetailScreen
-import com.composeexpert.ui.screens.EventsScreen
+import com.composeexpert.ui.screens.characters.CharacterDetailScreen
+import com.composeexpert.ui.screens.characters.CharactersScreen
+import com.composeexpert.ui.screens.comics.ComicDetailScreen
+import com.composeexpert.ui.screens.comics.ComicsScreen
+import com.composeexpert.ui.screens.events.EventDetailScreen
+import com.composeexpert.ui.screens.events.EventsScreen
 import com.composeexpert.ui.screens.SettingsScreen
 
 @ExperimentalMaterial3Api
@@ -48,9 +48,8 @@ private fun NavGraphBuilder.charactersNav(navController: NavHostController) {
             )
         }
 
-        composable(NavCommand.ContentTypeDetail(Feature.CHARACTERS)) { backStackEntry ->
-            val id = backStackEntry.findArg<Int>(NavArg.ItemId)
-            CharacterDetailScreen(characterId = id)
+        composable(NavCommand.ContentTypeDetail(Feature.CHARACTERS)) {
+            CharacterDetailScreen()
         }
     }
 }
@@ -70,8 +69,7 @@ private fun NavGraphBuilder.comicsNav(navController: NavController) {
             )
         }
         composable(NavCommand.ContentTypeDetail(Feature.COMICS)) { backStackEntry ->
-            val id = backStackEntry.findArg<Int>(NavArg.ItemId)
-            ComicDetailScreen(comicId = id)
+            ComicDetailScreen()
         }
     }
 }
@@ -90,9 +88,8 @@ private fun NavGraphBuilder.eventsNav(navController: NavController) {
                 }
             )
         }
-        composable(NavCommand.ContentTypeDetail(Feature.EVENTS)) { backStackEntry ->
-            val id = backStackEntry.findArg<Int>(NavArg.ItemId)
-            EventDetailScreen(eventId = id)
+        composable(NavCommand.ContentTypeDetail(Feature.EVENTS)) {
+            EventDetailScreen()
         }
     }
 }

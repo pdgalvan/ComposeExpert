@@ -1,4 +1,4 @@
-package com.composeexpert.ui.screens
+package com.composeexpert.ui.screens.comics
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -11,32 +11,26 @@ import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.composeexpert.data.entities.Comic
-import com.composeexpert.data.repositories.ComicsRepository
 import com.composeexpert.ui.screens.common.MarvelItemDetailScreen
 import com.composeexpert.ui.screens.common.MarvelItemsList
 import com.example.composeexpert.R
 import kotlinx.coroutines.launch
 
 @Composable
-fun ComicsScreen(onClick: (Comic) -> Unit) {
-    var comicsState by remember { mutableStateOf(emptyList<Comic>()) }
+fun ComicsScreen(
+    onClick: (Comic) -> Unit,
+    viewModel: ComicsViewModel = viewModel()
+) {
     val formats = Comic.Format.entries
     val pagerState = rememberPagerState(pageCount = { formats.size })
     val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        comicsState = ComicsRepository.get()
-    }
 
     Column {
         ScrollableTabRow(
@@ -63,10 +57,14 @@ fun ComicsScreen(onClick: (Comic) -> Unit) {
         }
         HorizontalPager(
             state = pagerState,
-        ) {
+        ) { page ->
+            val format = formats[page]
+            viewModel.formatRequested(format)
+            val pageState by viewModel.state.getValue(format)
             MarvelItemsList(
-                items = comicsState,
+                items = pageState.comics,
                 onClick = onClick,
+                isLoading = pageState.isLoading,
             )
         }
     }
@@ -85,12 +83,9 @@ fun Comic.Format.toStringRes(): Int = when (this) {
 }
 
 @Composable
-fun ComicDetailScreen(comicId: Int) {
-    var comicState by remember { mutableStateOf<Comic?>(null) }
-    LaunchedEffect(Unit) {
-        comicState = ComicsRepository.find(comicId)
-    }
-    comicState?.let {
-        MarvelItemDetailScreen(it)
-    }
+fun ComicDetailScreen(viewmodel: ComicDetailViewModel = viewModel()) {
+    MarvelItemDetailScreen(
+        isLoading = viewmodel.state.isLoading,
+        marvelItem = viewmodel.state.comic,
+    )
 }

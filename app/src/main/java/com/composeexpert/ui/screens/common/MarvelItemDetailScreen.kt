@@ -3,9 +3,11 @@ package com.composeexpert.ui.screens.common
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,11 +20,13 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -37,25 +41,39 @@ import com.composeexpert.data.entities.ReferenceList
 import com.example.composeexpert.R
 
 @Composable
-fun MarvelItemDetailScreen(marvelItem: MarvelItem) {
-    MarvelItemDetailScaffold(
-        marvelItem = marvelItem,
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(innerPadding)
-        ) {
-            item {
-                Header(marvelItem = marvelItem)
+fun MarvelItemDetailScreen(
+    isLoading: Boolean,
+    marvelItem: MarvelItem?,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator()
+        }
+
+        if (marvelItem != null) {
+            MarvelItemDetailScaffold(
+                marvelItem = marvelItem,
+            ) { innerPadding ->
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(innerPadding)
+                ) {
+                    item {
+                        Header(marvelItem = marvelItem)
+                    }
+                    marvelItem.references.forEach {
+                        val (icon, @StringRes stringRes) = it.type.createUiData()
+                        section(icon, stringRes, it.references)
+                    }
+                }
             }
-            marvelItem.references.forEach {
-                val (icon, @StringRes stringRes) = it.type.createUiData()
-                section(icon, stringRes, it.references)
-            }
+
         }
     }
-
 }
 
 fun LazyListScope.section(
