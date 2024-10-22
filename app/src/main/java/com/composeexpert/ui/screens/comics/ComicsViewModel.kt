@@ -5,11 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.composeexpert.data.entities.Comic
 import com.composeexpert.data.repositories.ComicsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class ComicsViewModel : ViewModel() {
 
-    val state = Comic.Format.entries.associateWith { mutableStateOf(UIState()) }
+    val state = Comic.Format.entries.associateWith { MutableStateFlow(UIState()) }
 
     fun formatRequested(format: Comic.Format) {
         val uiState = state.getValue(format)

@@ -11,6 +11,7 @@ import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -60,7 +61,9 @@ fun ComicsScreen(
         ) { page ->
             val format = formats[page]
             viewModel.formatRequested(format)
-            val pageState by viewModel.state.getValue(format)
+
+            val pageState by viewModel.state.getValue(format).collectAsState()
+
             MarvelItemsList(
                 items = pageState.comics,
                 onClick = onClick,
@@ -84,8 +87,10 @@ fun Comic.Format.toStringRes(): Int = when (this) {
 
 @Composable
 fun ComicDetailScreen(viewmodel: ComicDetailViewModel = viewModel()) {
+    val state by viewmodel.state.collectAsState()
+
     MarvelItemDetailScreen(
-        isLoading = viewmodel.state.isLoading,
-        marvelItem = viewmodel.state.comic,
+        isLoading = state.isLoading,
+        marvelItem = state.comic,
     )
 }

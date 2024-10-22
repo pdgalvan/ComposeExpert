@@ -9,6 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.composeexpert.data.entities.Event
 import com.composeexpert.data.repositories.EventsRepository
 import com.composeexpert.ui.navigation.NavArg
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class EventDetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
@@ -16,13 +19,13 @@ class EventDetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     private val id = savedStateHandle.get<Int>(NavArg.ItemId.key)
         ?: throw IllegalArgumentException("eventId must be provided")
 
-    var state by mutableStateOf(UIState())
-        private set
+    private val _state = MutableStateFlow(UIState())
+    val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            state = UIState(isLoading = true)
-            state = UIState(event = EventsRepository.find(id))
+            _state.update {UIState(isLoading = true) }
+            _state.update { UIState(event = EventsRepository.find(id)) }
         }
     }
 
