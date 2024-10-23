@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.composeexpert.data.entities.Event
+import com.composeexpert.data.network.entities.Result
 import com.composeexpert.data.repositories.EventsRepository
 import com.composeexpert.ui.navigation.NavArg
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +33,6 @@ class EventDetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     data class UIState(
         val isLoading: Boolean = false,
-        val event: Event? = null,
+        val event: Result<Event?> = Either.Right(null),
     )
 }

@@ -1,11 +1,10 @@
 package com.composeexpert.ui.screens.characters
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.composeexpert.data.entities.Character
+import com.composeexpert.data.network.entities.Result
 import com.composeexpert.data.repositories.CharactersRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +24,6 @@ class CharactersViewModel : ViewModel() {
 
     data class UIState(
         val isLoading: Boolean = false,
-        val characters: List<Character> = emptyList(),
+        val characters: Result<List<Character>> = Either.Right(emptyList()),
     )
 }

@@ -2,7 +2,9 @@ package com.composeexpert.ui.screens.events
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.composeexpert.data.entities.Event
+import com.composeexpert.data.network.entities.Result
 import com.composeexpert.data.repositories.EventsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +24,6 @@ class EventsViewModel : ViewModel() {
 
     data class UIState(
         val isLoading: Boolean = false,
-        val events: List<Event> = emptyList(),
+        val events: Result<List<Event>> = Either.Right(emptyList()),
     )
 }

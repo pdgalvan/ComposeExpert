@@ -3,7 +3,9 @@ package com.composeexpert.ui.screens.comics
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.composeexpert.data.entities.Comic
+import com.composeexpert.data.network.entities.Result
 import com.composeexpert.data.repositories.ComicsRepository
 import com.composeexpert.ui.navigation.NavArg
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,6 @@ class ComicDetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     data class UIState(
         val isLoading: Boolean = false,
-        val comic: Comic? = null,
+        val comic: Result<Comic?> = Either.Right(null),
     )
 }

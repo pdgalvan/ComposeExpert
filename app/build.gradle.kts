@@ -75,6 +75,10 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.support.annotations)
 
+    //Arrow
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.fx.coroutines)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

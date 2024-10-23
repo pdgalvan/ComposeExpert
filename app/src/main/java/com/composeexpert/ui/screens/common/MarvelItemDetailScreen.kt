@@ -38,40 +38,43 @@ import coil.compose.rememberAsyncImagePainter
 import com.composeexpert.data.entities.MarvelItem
 import com.composeexpert.data.entities.Reference
 import com.composeexpert.data.entities.ReferenceList
+import com.composeexpert.data.network.entities.Result
 import com.example.composeexpert.R
 
 @Composable
 fun MarvelItemDetailScreen(
     isLoading: Boolean,
-    marvelItem: MarvelItem?,
+    marvelItem: Result<MarvelItem?>,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator()
-        }
+    if (isLoading) {
+        CircularProgressIndicator()
+    }
+    marvelItem.fold({ ErrorScreen(it) }) { item ->
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
 
-        if (marvelItem != null) {
-            MarvelItemDetailScaffold(
-                marvelItem = marvelItem,
-            ) { innerPadding ->
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(innerPadding)
-                ) {
-                    item {
-                        Header(marvelItem = marvelItem)
-                    }
-                    marvelItem.references.forEach {
-                        val (icon, @StringRes stringRes) = it.type.createUiData()
-                        section(icon, stringRes, it.references)
+            if (item != null) {
+                MarvelItemDetailScaffold(
+                    marvelItem = item,
+                ) { innerPadding ->
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(innerPadding)
+                    ) {
+                        item {
+                            Header(marvelItem = item)
+                        }
+                        item.references.forEach {
+                            val (icon, @StringRes stringRes) = it.type.createUiData()
+                            section(icon, stringRes, it.references)
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 }

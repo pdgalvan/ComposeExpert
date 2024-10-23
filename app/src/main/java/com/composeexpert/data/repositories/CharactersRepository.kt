@@ -2,10 +2,11 @@ package com.composeexpert.data.repositories
 
 import com.composeexpert.data.network.ApiClient
 import com.composeexpert.data.entities.Character
+import com.composeexpert.data.network.entities.Result
 
 object CharactersRepository : Repository<Character>() {
 
-    suspend fun get(): List<Character> = super.get {
+    suspend fun get(): Result<List<Character>> = super.get {
         ApiClient
             .charactersService
             .getCharacters(0,100)
@@ -14,7 +15,7 @@ object CharactersRepository : Repository<Character>() {
             .asCharacters()
     }
 
-    suspend fun find(id: Int): Character = super.find(
+    suspend fun find(id: Int): Result<Character> = super.find(
         id = id,
         findActionRemote =  {
             ApiClient

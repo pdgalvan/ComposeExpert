@@ -13,18 +13,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.composeexpert.data.entities.MarvelItem
+import com.composeexpert.data.network.entities.Result
 
 @Composable
 fun <T : MarvelItem> MarvelItemsListScreen(
-    items: List<T>,
+    items: Result<List<T>>,
     isLoading: Boolean,
     onClick: (T) -> Unit
 ) {
-    MarvelItemsList(
-        items = items,
-        isLoading = isLoading,
-        onClick = onClick,
-    )
+    items.fold({ ErrorScreen(it) }) {
+        MarvelItemsList(
+            items = it,
+            isLoading = isLoading,
+            onClick = onClick,
+        )
+    }
 }
 
 @Composable

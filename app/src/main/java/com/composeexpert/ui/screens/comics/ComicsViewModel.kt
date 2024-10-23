@@ -1,9 +1,10 @@
 package com.composeexpert.ui.screens.comics
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.composeexpert.data.entities.Comic
+import com.composeexpert.data.network.entities.Result
 import com.composeexpert.data.repositories.ComicsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -24,6 +25,6 @@ class ComicsViewModel : ViewModel() {
 
     data class UIState(
         val isLoading: Boolean = false,
-        val comics: List<Comic> = emptyList(),
+        val comics: Result<List<Comic>> = Either.Right(emptyList()),
     )
 }
