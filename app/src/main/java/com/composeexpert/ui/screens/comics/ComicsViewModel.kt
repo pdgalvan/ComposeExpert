@@ -15,11 +15,12 @@ class ComicsViewModel : ViewModel() {
 
     fun formatRequested(format: Comic.Format) {
         val uiState = state.getValue(format)
-        if (uiState.value.comics.isNotEmpty()) return
-
-        viewModelScope.launch {
-            uiState.value = UIState(isLoading = true)
-            uiState.value = UIState(comics = ComicsRepository.get(format))
+        val comics = uiState.value.comics
+        if (comics is Either.Right && comics.value.isEmpty()) {
+            viewModelScope.launch {
+                uiState.value = UIState(isLoading = true)
+                uiState.value = UIState(comics = ComicsRepository.get(format))
+            }
         }
     }
 
