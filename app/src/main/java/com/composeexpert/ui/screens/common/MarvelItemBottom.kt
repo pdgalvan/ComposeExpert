@@ -1,6 +1,5 @@
 package com.composeexpert.ui.screens.common
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.composeexpert.data.entities.Character
 import com.composeexpert.data.entities.MarvelItem
 import com.example.composeexpert.R
@@ -34,8 +33,8 @@ fun <T : MarvelItem> MarvelItemBottom(
             modifier = Modifier.padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(marvelItem.thumbnail),
+            AsyncImage(
+                model = marvelItem.thumbnail,
                 contentDescription = marvelItem.title,
                 contentScale = ContentScale.FillHeight,
                 modifier = Modifier

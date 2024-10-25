@@ -34,7 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.composeexpert.data.entities.MarvelItem
 import com.composeexpert.data.entities.Reference
 import com.composeexpert.data.entities.ReferenceList
@@ -103,8 +103,8 @@ fun LazyListScope.section(
 @Composable
 fun Header(marvelItem: MarvelItem) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Image(
-            painter = rememberAsyncImagePainter(marvelItem.thumbnail),
+        AsyncImage(
+            model = marvelItem.thumbnail,
             contentDescription = marvelItem.title,
             contentScale = ContentScale.Crop,
             modifier = Modifier
