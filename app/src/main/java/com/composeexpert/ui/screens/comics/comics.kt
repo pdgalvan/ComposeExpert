@@ -21,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.composeexpert.data.entities.Comic
 import com.composeexpert.ui.screens.common.ErrorScreen
 import com.composeexpert.ui.screens.common.MarvelItemDetailScreen
-import com.composeexpert.ui.screens.common.MarvelItemsList
+import com.composeexpert.ui.screens.common.MarvelItemsListScreen
 import com.example.composeexpert.R
 import kotlinx.coroutines.launch
 
@@ -65,11 +65,10 @@ fun ComicsScreen(
 
             val pageState by viewModel.state.getValue(format).collectAsState()
             pageState.comics.fold({ ErrorScreen(it) }) {
-                MarvelItemsList(
+                MarvelItemsListScreen(
                     isLoading = pageState.isLoading,
-                    items = it,
+                    items = pageState.comics,
                     onClick = onClick,
-                    onClickMore =  { }
                 )
             }
         }

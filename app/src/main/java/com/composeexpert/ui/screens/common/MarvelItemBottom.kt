@@ -26,39 +26,41 @@ import com.example.composeexpert.R
 
 @Composable
 fun <T : MarvelItem> MarvelItemBottom(
-    marvelItem: T,
+    marvelItem: T?,
     onClickDetail: (T) -> Unit,
 ) {
-    Row(
-        modifier = Modifier.padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(marvelItem.thumbnail),
-            contentDescription = marvelItem.title,
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier
-                .width(96.dp)
-                .aspectRatio(1 / 1.5f)
-                .background(Color.LightGray)
-        )
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    if(marvelItem != null) {
+        Row(
+            modifier = Modifier.padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = marvelItem.title,
-                style = MaterialTheme.typography.titleMedium
+            Image(
+                painter = rememberAsyncImagePainter(marvelItem.thumbnail),
+                contentDescription = marvelItem.title,
+                contentScale = ContentScale.FillHeight,
+                modifier = Modifier
+                    .width(96.dp)
+                    .aspectRatio(1 / 1.5f)
+                    .background(Color.LightGray)
             )
-            Text(
-                text = marvelItem.description,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Button(
-                onClick = { onClickDetail(marvelItem) },
-                modifier = Modifier.align(Alignment.End)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(text = stringResource(R.string.go_to_detail))
+                Text(
+                    text = marvelItem.title,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = marvelItem.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Button(
+                    onClick = { onClickDetail(marvelItem) },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(text = stringResource(R.string.go_to_detail))
+                }
             }
         }
     }

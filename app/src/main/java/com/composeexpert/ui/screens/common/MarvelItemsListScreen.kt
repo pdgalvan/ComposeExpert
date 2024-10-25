@@ -1,5 +1,6 @@
 package com.composeexpert.ui.screens.common
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,8 +34,11 @@ fun <T : MarvelItem> MarvelItemsListScreen(
 ) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
     var itemSelected by remember { mutableStateOf<T?>(null) }
+
+    BackHandler(sheetState.isVisible) {
+        scope.launch { sheetState.hide() }
+    }
 
     items.fold({ ErrorScreen(it) }) {
         MarvelItemsList(
@@ -44,39 +48,35 @@ fun <T : MarvelItem> MarvelItemsListScreen(
             onClickMore = { item ->
                 scope.launch {
                     itemSelected = item
-                    showBottomSheet = true
                     sheetState.show()
                 }
             }
         )
     }
-    if (showBottomSheet) {
+    if (sheetState.isVisible) {
         ModalBottomSheet(
             onDismissRequest = {
                 scope.launch {
                     sheetState.hide()
-                    showBottomSheet = false
                 }
             },
             sheetState = sheetState
         ) {
-            itemSelected?.let {
-                MarvelItemBottom(
-                    marvelItem = it,
-                    onClickDetail = { item ->
-                        scope.launch {
-                            sheetState.hide()
-                            onClick(item)
-                        }
+            MarvelItemBottom(
+                marvelItem = itemSelected,
+                onClickDetail = { item ->
+                    scope.launch {
+                        sheetState.hide()
+                        onClick(item)
                     }
-                )
-            }
+                }
+            )
         }
     }
 }
 
 @Composable
-fun <T : MarvelItem> MarvelItemsList(
+private fun <T : MarvelItem> MarvelItemsList(
     items: List<T>,
     onClick: (T) -> Unit,
     onClickMore: (T) -> Unit,
