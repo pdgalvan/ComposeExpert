@@ -68,7 +68,8 @@ fun ComicsScreen(
                 MarvelItemsList(
                     isLoading = pageState.isLoading,
                     items = it,
-                    onClick = onClick
+                    onClick = onClick,
+                    onClickMore =  { }
                 )
             }
         }
