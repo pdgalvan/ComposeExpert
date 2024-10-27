@@ -8,15 +8,23 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -38,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -81,82 +90,101 @@ fun LoginScreen(
         validationMessage = validateLogin(user, password)
     }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    Column(
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val bgTransition by infiniteTransition.animateColor(
+        initialValue = Color.White,
+        targetValue = Color.LightGray,
+        animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 1500
+            },
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
+    Box(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
+        contentAlignment = Alignment.Center,
     ) {
-        TextField(
-            isError = isError,
-            value = user,
-            onValueChange = { user = it },
-            singleLine = true,
-            label = { Text("User") },
-            placeholder = { Text("Input your user") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-        )
-        TextField(
-            isError = isError,
-            value = password,
-            onValueChange = { password = it },
-            singleLine = true,
-            label = { Text("Password") },
-            placeholder = { Text("Input your password") },
-            trailingIcon = {
-                IconToggleButton(
-                    checked = isPasswordVisible,
-                    onCheckedChange = { isPasswordVisible = it }
-                ) {
-                    Crossfade(
-                        targetState = isPasswordVisible,
-                        label = "",
-                        animationSpec = tween(2000)
-                    ) { visible ->
-                        if (visible) {
-                            Icon(
-                                imageVector = Icons.Default.VisibilityOff,
-                                contentDescription = null
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Visibility,
-                                contentDescription = null
-                            )
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(bgTransition)
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
+        ) {
+            TextField(
+                isError = isError,
+                value = user,
+                onValueChange = { user = it },
+                singleLine = true,
+                label = { Text("User") },
+                placeholder = { Text("Input your user") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+            )
+            TextField(
+                isError = isError,
+                value = password,
+                onValueChange = { password = it },
+                singleLine = true,
+                label = { Text("Password") },
+                placeholder = { Text("Input your password") },
+                trailingIcon = {
+                    IconToggleButton(
+                        checked = isPasswordVisible,
+                        onCheckedChange = { isPasswordVisible = it }
+                    ) {
+                        Crossfade(
+                            targetState = isPasswordVisible,
+                            label = "",
+                            animationSpec = tween(2000)
+                        ) { visible ->
+                            if (visible) {
+                                Icon(
+                                    imageVector = Icons.Default.VisibilityOff,
+                                    contentDescription = null
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Visibility,
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
-                }
-            },
-            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            keyboardActions = KeyboardActions(onDone = { login() }
+                },
+                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardActions = KeyboardActions(onDone = { login() }
+                )
             )
-        )
-        AnimatedVisibility(
-            visible = validationMessage.isNotBlank(),
-            enter = slideInHorizontally(initialOffsetX = { 2 * it })
-        ) {
-            Text(text = validationMessage, color = MaterialTheme.colorScheme.error)
-        }
-        AnimatedVisibility(visible = isButtonEnabled) {
-            Button(
-                onClick = login
+            AnimatedVisibility(
+                visible = validationMessage.isNotBlank(),
+                enter = slideInHorizontally(initialOffsetX = { 2 * it })
             ) {
-                Text(text = "Login")
+                Text(text = validationMessage, color = MaterialTheme.colorScheme.error)
             }
+            AnimatedVisibility(visible = isButtonEnabled) {
+                Button(
+                    onClick = login
+                ) {
+                    Text(text = "Login")
+                }
+            }
+            //AnimatedContentComponent()
         }
-        //AnimatedContentComponent()
     }
 }
 
 @Composable
 fun AnimatedContentComponent() {
     var counter by remember { mutableIntStateOf(0) }
-    Button( onClick =  {
+    Button(onClick = {
         counter++
-    }){
+    }) {
         Text("Increase counter")
     }
     AnimatedContent(
@@ -166,7 +194,7 @@ fun AnimatedContentComponent() {
                 .togetherWith(slideOutOfContainer(Up) + fadeOut())
         },
         label = ""
-    ){
+    ) {
         Text("Click counter $it")
     }
 }
