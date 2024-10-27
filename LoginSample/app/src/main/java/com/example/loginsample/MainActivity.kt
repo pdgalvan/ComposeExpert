@@ -10,15 +10,18 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,6 +57,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.loginsample.ui.theme.LoginSampleTheme
+import kotlin.math.min
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,8 +103,14 @@ fun LoginScreen(
                 durationMillis = 1500
             },
             repeatMode = RepeatMode.Reverse
-        ), label = ""
+        ), label = "bgTransition"
     )
+    var counter by remember { mutableIntStateOf(0) }
+    val transition = updateTransition(targetState = counter, label = "updateTransitionCounter")
+    val animateDp by transition.animateDp(label = "animateDpCount") { count -> count.dp }
+    val animateColor by transition.animateColor(label = "animateColorCount") {
+        Color.Gray.copy(alpha = min(1f, it / 10f))
+    }
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -108,7 +118,8 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .wrapContentSize()
-                .background(bgTransition)
+                .background(animateColor)
+                .border(animateDp, Color.Gray)
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
@@ -139,7 +150,7 @@ fun LoginScreen(
                     ) {
                         Crossfade(
                             targetState = isPasswordVisible,
-                            label = "",
+                            label = "crossfade",
                             animationSpec = tween(2000)
                         ) { visible ->
                             if (visible) {
@@ -169,7 +180,7 @@ fun LoginScreen(
             }
             AnimatedVisibility(visible = isButtonEnabled) {
                 Button(
-                    onClick = login
+                    onClick = { counter++ }
                 ) {
                     Text(text = "Login")
                 }
