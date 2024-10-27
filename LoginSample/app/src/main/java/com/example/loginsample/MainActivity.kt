@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +19,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -102,10 +104,23 @@ fun LoginScreen(
                     checked = isPasswordVisible,
                     onCheckedChange = { isPasswordVisible = it }
                 ) {
-                    Icon(
-                        imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        contentDescription = null
-                    )
+                    Crossfade(
+                        targetState = isPasswordVisible,
+                        label = "",
+                        animationSpec = tween(2000)
+                    ) { visible ->
+                        if (visible) {
+                            Icon(
+                                imageVector = Icons.Default.VisibilityOff,
+                                contentDescription = null
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Visibility,
+                                contentDescription = null
+                            )
+                        }
+                    }
                 }
             },
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -113,12 +128,14 @@ fun LoginScreen(
             keyboardActions = KeyboardActions(onDone = { login() }
             )
         )
-        AnimatedVisibility(visible = validationMessage.isNotBlank()) {
+        AnimatedVisibility(
+            visible = validationMessage.isNotBlank(),
+            enter = slideInHorizontally(initialOffsetX = { 2 * it })
+        ) {
             Text(text = validationMessage, color = MaterialTheme.colorScheme.error)
         }
         AnimatedVisibility(visible = isButtonEnabled) {
             Button(
-                enabled = isButtonEnabled,
                 onClick = login
             ) {
                 Text(text = "Login")
