@@ -7,14 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,18 +26,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -50,12 +40,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.loginsample.ui.components.PasswordTextField
+import com.example.loginsample.ui.components.UserTextField
 import com.example.loginsample.ui.theme.LoginSampleTheme
 import kotlin.math.min
 
@@ -93,7 +81,6 @@ fun LoginScreen(
     val login = {
         validationMessage = validateLogin(user, password)
     }
-    var isPasswordVisible by remember { mutableStateOf(false) }
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val bgTransition by infiniteTransition.animateColor(
         initialValue = Color.White,
@@ -124,53 +111,13 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
         ) {
-            TextField(
-                isError = isError,
+            UserTextField(
                 value = user,
-                onValueChange = { user = it },
-                singleLine = true,
-                label = { Text("User") },
-                placeholder = { Text("Input your user") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ),
+                onValueChange = { user = it }
             )
-            TextField(
-                isError = isError,
+            PasswordTextField(
                 value = password,
-                onValueChange = { password = it },
-                singleLine = true,
-                label = { Text("Password") },
-                placeholder = { Text("Input your password") },
-                trailingIcon = {
-                    IconToggleButton(
-                        checked = isPasswordVisible,
-                        onCheckedChange = { isPasswordVisible = it }
-                    ) {
-                        Crossfade(
-                            targetState = isPasswordVisible,
-                            label = "crossfade",
-                            animationSpec = tween(2000)
-                        ) { visible ->
-                            if (visible) {
-                                Icon(
-                                    imageVector = Icons.Default.VisibilityOff,
-                                    contentDescription = null
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.Visibility,
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    }
-                },
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                keyboardActions = KeyboardActions(onDone = { login() }
-                )
+                onValueChange = { password = it }
             )
             AnimatedVisibility(
                 visible = validationMessage.isNotBlank(),
@@ -189,6 +136,9 @@ fun LoginScreen(
         }
     }
 }
+
+
+
 
 @Composable
 fun AnimatedContentComponent() {
