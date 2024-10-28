@@ -1,13 +1,13 @@
 package com.composeexpert.data.repositories
 
 import com.composeexpert.data.entities.Event
-import com.composeexpert.data.network.ApiClient
 import com.composeexpert.data.network.entities.Result
+import com.composeexpert.data.network.remote.EventsService
+import javax.inject.Inject
 
-object EventsRepository : Repository<Event>() {
+class EventsRepository @Inject constructor (private val service: EventsService) : Repository<Event>() {
     suspend fun get(): Result<List<Event>> = super.get {
-        ApiClient
-            .eventsService
+        service
             .getEvents(0, 20)
             .data
             .results
@@ -16,8 +16,7 @@ object EventsRepository : Repository<Event>() {
     suspend fun find(id: Int): Result<Event> = super.find(
         id,
         findActionRemote = {
-            ApiClient
-                .eventsService
+            service
                 .findEvent(id)
                 .data
                 .results

@@ -1,7 +1,6 @@
 package com.composeexpert.ui.screens.common
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +46,12 @@ fun MarvelItemDetailScreen(
     marvelItem: Result<MarvelItem?>,
 ) {
     if (isLoading) {
-        CircularProgressIndicator()
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     }
     marvelItem.fold({ ErrorScreen(it) }) { item ->
         Box(

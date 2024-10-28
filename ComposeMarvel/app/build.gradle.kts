@@ -2,8 +2,10 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
+    id("kotlin-kapt")
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -46,12 +48,15 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.13"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    kapt {
+        correctErrorTypes = true
     }
 }
 
@@ -78,6 +83,11 @@ dependencies {
     //Arrow
     implementation(libs.arrow.core)
     implementation(libs.arrow.fx.coroutines)
+
+    //Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.hilt.compose.navigation)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

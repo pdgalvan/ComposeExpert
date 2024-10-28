@@ -8,12 +8,15 @@ import com.composeexpert.data.entities.Comic
 import com.composeexpert.data.network.entities.Result
 import com.composeexpert.data.repositories.ComicsRepository
 import com.composeexpert.ui.navigation.NavArg
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ComicDetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+@HiltViewModel
+class ComicDetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle, repository: ComicsRepository) : ViewModel() {
     private val id = savedStateHandle.get<Int>(NavArg.ItemId.key)
         ?: throw IllegalArgumentException("comicId must be provided")
 
@@ -23,7 +26,7 @@ class ComicDetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     init {
         viewModelScope.launch {
             _state.update { UIState(isLoading = true) }
-            _state.update { UIState(comic = ComicsRepository.find(id)) }
+            _state.update { UIState(comic = repository.find(id)) }
         }
     }
 

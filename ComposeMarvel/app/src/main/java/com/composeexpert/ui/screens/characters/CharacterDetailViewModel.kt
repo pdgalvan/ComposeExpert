@@ -8,12 +8,15 @@ import com.composeexpert.data.entities.Character
 import com.composeexpert.data.network.entities.Result
 import com.composeexpert.data.repositories.CharactersRepository
 import com.composeexpert.ui.navigation.NavArg
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CharacterDetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+@HiltViewModel
+class CharacterDetailViewModel @Inject constructor(savedStateHandle: SavedStateHandle, repository: CharactersRepository) : ViewModel() {
 
     private val id = savedStateHandle.get<Int>(NavArg.ItemId.key)
         ?: throw IllegalArgumentException("characterId must be provided")
@@ -25,7 +28,7 @@ class CharacterDetailViewModel(savedStateHandle: SavedStateHandle) : ViewModel()
     init {
         viewModelScope.launch {
             _state.update { UIState(isLoading = true) }
-            _state.update { UIState(character = CharactersRepository.find(id)) }
+            _state.update { UIState(character = repository.find(id)) }
         }
     }
 

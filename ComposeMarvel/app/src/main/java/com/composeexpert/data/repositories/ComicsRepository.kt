@@ -1,15 +1,15 @@
 package com.composeexpert.data.repositories
 
 import com.composeexpert.data.entities.Comic
-import com.composeexpert.data.network.ApiClient
 import com.composeexpert.data.network.entities.Result
 import com.composeexpert.data.network.entities.tryCall
+import com.composeexpert.data.network.remote.ComicsService
+import javax.inject.Inject
 
-object ComicsRepository {
+class ComicsRepository @Inject constructor(private val service: ComicsService) {
 
     suspend fun get(format: Comic.Format): Result<List<Comic>> = tryCall {
-        ApiClient
-            .comicsService
+        service
             .getComics(0, 20, format.toStringFormat())
             .data
             .results
@@ -17,8 +17,7 @@ object ComicsRepository {
     }
 
     suspend fun find(id: Int): Result<Comic> = tryCall {
-        ApiClient
-            .comicsService
+        service
             .findComic(id)
             .data
             .results
